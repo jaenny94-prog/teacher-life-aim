@@ -1,0 +1,17 @@
+{
+  "short_name": "티처라이프",
+  "name": "Teacher Money & Life Dashboard",
+  "icons": [
+    {
+      "src": "https://api.iconify.design/lucide:sparkles.svg?color=%2338bdf8",
+      "type": "image/svg+xml",
+      "sizes": "192x192 512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#f8fafc",
+  "theme_color": "#38bdf8",
+  "display": "standalone",
+  "orientation": "portrait"
+}
