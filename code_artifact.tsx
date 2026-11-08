@@ -2892,142 +2892,192 @@ export default function AdventurerDashboard() {
         {/* =========================================================================
             TAB 5: 📖 기록의 서재 (감정 일기 & 키워드 마이너)
            ========================================================================= */}
-        {activeTab === 'diary' && (
-          <div className="space-y-4 animate-fadeIn">
-            
-            {/* 일기 작성 에디터 */}
-            <div className="bg-white rounded-3xl p-5 sm:p-6 border border-indigo-100 shadow-sm space-y-4">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
-                <div className="flex items-center gap-2">
-                  <BookOpen className="w-5 h-5 text-indigo-600" />
-                  <h2 className="text-base sm:text-lg font-black text-slate-900">
-                    기록의 서재 (하루 일기 & 키워드 마이닝)
-                  </h2>
+       
+            {activeTab === 'diary' && (
+            <div className="space-y-6 animate-fadeIn">
+              {/* 상단 액션 바 */}
+              <div className="flex items-center justify-between bg-white p-5 rounded-3xl border border-indigo-100 shadow-sm">
+                <div>
+                  <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <BookOpen className="w-5 h-5 text-indigo-600" />
+                    기록의 서재 (교직 & 일상 회고)
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">지나간 날짜를 선택해 과거 일기를 추가하거나, 회고 댓글을 남길 수 있습니다.</p>
                 </div>
-
-                <div className="flex items-center gap-2">
-                  <input
-                    type="date"
-                    value={diaryDate}
-                    onChange={(e) => setDiaryDate(e.target.value)}
-                    className="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1 text-xs text-slate-800 font-bold focus:outline-none"
-                  />
-                  <input
-                    type="text"
-                    value={diaryMood}
-                    onChange={(e) => setDiaryMood(e.target.value)}
-                    placeholder="오늘의 감정 날씨..."
-                    className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-1 text-xs text-slate-800 focus:outline-none w-32"
-                  />
-                </div>
-              </div>
-
-              {/* 일기 텍스트 에디터 */}
-              <textarea
-                rows={5}
-                placeholder="오늘 하루의 생각, 지출 반성, 교직 일상, 내일의 다짐을 자유롭게 적어보세요..."
-                value={diaryContent}
-                onChange={(e) => {
-                  setDiaryContent(e.target.value);
-                  // 간단한 실시간 한국어 키워드 추출
-                  const words = e.target.value
-                    .split(/\s+/)
-                    .map(w => w.replace(/[.,!?~'"()]/g, '').trim())
-                    .filter(w => w.length >= 2);
-                  const uniqueWords = Array.from(new Set(words)).slice(0, 5);
-                  setExtractedKeywords(uniqueWords);
-                }}
-                className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs sm:text-sm text-slate-800 focus:outline-none focus:border-indigo-400 resize-none shadow-inner"
-              />
-
-              {/* 실시간 추출된 키워드 & 뇌구조 전송 액션 */}
-              <div className="flex flex-wrap items-center justify-between gap-2 pt-2">
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="text-xs font-bold text-slate-400 flex items-center gap-1">
-                    <Sparkles className="w-3.5 h-3.5 text-amber-500" /> 추출 키워드:
-                  </span>
-                  {extractedKeywords.length === 0 ? (
-                    <span className="text-xs text-slate-400">일기를 작성하면 키워드가 추출됩니다.</span>
-                  ) : (
-                    extractedKeywords.map((kw, i) => (
-                      <button
-                        key={i}
-                        onClick={() => {
-                          const newNode = {
-                            id: `bn-${Date.now()}-${i}`,
-                            text: kw,
-                            weight: 2,
-                            x: Math.floor(Math.random() * 60) + 20,
-                            y: Math.floor(Math.random() * 60) + 20,
-                            side: 'right',
-                            category: '일기'
-                          };
-                          setBrainNodes([...brainNodes, newNode]);
-                          playRetroSound('recallChime', soundEnabled);
-                          triggerToast(`🧠 [${kw}] 키워드가 시냅스 뇌구조에 각인되었습니다!`);
-                        }}
-                        className="px-2.5 py-1 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold transition border border-indigo-200 active:scale-95 flex items-center gap-1"
-                        title="클릭하여 뇌구조로 보내기"
-                      >
-                        <span>{kw}</span>
-                        <ArrowUpRight className="w-3 h-3 text-indigo-400" />
-                      </button>
-                    ))
-                  )}
-                </div>
-
                 <button
                   onClick={() => {
-                    if (!diaryContent.trim()) return;
-                    const newDiary = {
-                      id: `d-${Date.now()}`,
-                      date: diaryDate,
-                      weather: diaryWeather,
-                      mood: diaryMood,
-                      content: diaryContent.trim(),
-                      keywords: extractedKeywords
-                    };
-                    setDiaries([newDiary, ...diaries]);
-                    setDiaryContent('');
-                    setExtractedKeywords([]);
-                    playRetroSound('questClear', soundEnabled);
-                    grantRewards(30, 20);
-                    triggerToast('📖 일기가 안전하게 서재에 보관되었습니다. (+30 EXP)');
+                    setEditingDiary({});
+                    setDiaryDateInput(new Date().toISOString().split('T')[0]);
+                    setDiaryTitleInput('');
+                    setDiaryContentInput('');
                   }}
-                  className="px-5 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold shadow-md transition active:scale-95"
+                  className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl text-xs font-bold shadow-md transition flex items-center gap-1.5"
                 >
-                  일기 저장하기
+                  <Plus className="w-4 h-4" /> 새 일기 쓰기
                 </button>
               </div>
-            </div>
 
-            {/* 저장된 일기 목록 */}
-            <div className="space-y-3">
-              <h3 className="text-sm font-black text-slate-900">지난 일기 기록 ({diaries.length}편)</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {diaries.map(d => (
-                  <div key={d.id} className="bg-white rounded-3xl p-4 border border-indigo-100 shadow-sm space-y-2">
-                    <div className="flex items-center justify-between text-xs text-slate-400 border-b border-slate-100 pb-2">
-                      <span className="font-mono font-bold text-indigo-600">{d.date}</span>
-                      <span className="font-bold text-slate-700">{d.mood}</span>
+              {/* 일기 작성 / 수정 모달 입력 폼 */}
+              {editingDiary !== null && (
+                <div className="bg-white p-5 rounded-3xl border-2 border-indigo-300 shadow-lg space-y-4">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <h4 className="font-bold text-slate-800 text-sm flex items-center gap-1.5">
+                      <Edit3 className="w-4 h-4 text-indigo-600" />
+                      {editingDiary.id ? '일기 수정하기' : '새 일기 작성하기 (과거 날짜 선택 가능)'}
+                    </h4>
+                    <button 
+                      onClick={() => setEditingDiary(null)}
+                      className="text-slate-400 hover:text-slate-600 p-1 text-sm font-bold"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-600 mb-1">날짜 선택</label>
+                      <input
+                        type="date"
+                        value={diaryDateInput}
+                        onChange={(e) => setDiaryDateInput(e.target.value)}
+                        className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none font-medium"
+                      />
                     </div>
-                    <p className="text-xs text-slate-700 leading-relaxed whitespace-pre-wrap">
-                      {d.content}
-                    </p>
-                    <div className="flex flex-wrap gap-1 pt-1">
-                      {d.keywords?.map((k, idx) => (
-                        <span key={idx} className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">
-                          #{k}
-                        </span>
-                      ))}
+                    <div>
+                      <label className="block text-xs font-bold text-slate-600 mb-1">제목</label>
+                      <input
+                        type="text"
+                        placeholder="일기 제목을 입력하세요"
+                        value={diaryTitleInput}
+                        onChange={(e) => setDiaryTitleInput(e.target.value)}
+                        className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+                      />
                     </div>
                   </div>
-                ))}
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-600 mb-1">일기 내용</label>
+                    <textarea
+                      rows={4}
+                      placeholder="오늘 어떤 일이 있었나요? 아이들과 나눈 대화나 나의 감정을 편하게 남겨보세요."
+                      value={diaryContentInput}
+                      onChange={(e) => setDiaryContentInput(e.target.value)}
+                      className="w-full px-3 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none resize-none leading-relaxed"
+                    />
+                  </div>
+
+                  <div className="flex justify-end gap-2 pt-1">
+                    <button
+                      onClick={() => setEditingDiary(null)}
+                      className="px-4 py-2 text-xs font-semibold text-slate-500 hover:bg-slate-100 rounded-xl transition"
+                    >
+                      취소
+                    </button>
+                    <button
+                      onClick={handleSaveDiaryEntry}
+                      className="px-5 py-2 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow transition"
+                    >
+                      저장하기
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* 일기 타임라인 목록 */}
+              <div className="space-y-4">
+                {diaryEntries.length === 0 ? (
+                  <div className="text-center py-12 bg-white rounded-3xl border border-dashed border-slate-200 text-slate-400 text-xs">
+                    작성된 일기가 없습니다. 상단의 [새 일기 쓰기]를 눌러 첫 기록을 남겨보세요!
+                  </div>
+                ) : (
+                  diaryEntries.map((entry) => (
+                    <div key={entry.id} className="bg-white rounded-3xl p-5 border border-indigo-50 shadow-sm space-y-3">
+                      {/* 일기 상단 헤더 */}
+                      <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                        <div className="flex items-center gap-2">
+                          <span className="px-2.5 py-1 rounded-xl text-xs font-bold bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center gap-1">
+                            <Calendar className="w-3.5 h-3.5" /> {entry.date}
+                          </span>
+                          <h4 className="font-bold text-slate-900 text-sm">{entry.title}</h4>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => handleOpenEditModal(entry)}
+                            className="px-2.5 py-1 text-xs text-slate-600 hover:bg-slate-100 rounded-lg transition font-medium"
+                          >
+                            수정
+                          </button>
+                          <button
+                            onClick={() => handleDeleteDiaryEntry(entry.id)}
+                            className="px-2.5 py-1 text-xs text-rose-500 hover:bg-rose-50 rounded-lg transition font-medium"
+                          >
+                            삭제
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* 본문 */}
+                      <p className="text-xs text-slate-700 leading-relaxed whitespace-pre-wrap">
+                        {entry.content}
+                      </p>
+
+                      {/* 댓글 / 회고 피드백 영역 */}
+                      <div className="mt-3 pt-3 border-t border-slate-100 bg-slate-50/80 p-3.5 rounded-2xl space-y-2.5">
+                        <div className="flex items-center justify-between text-xs font-bold text-slate-700">
+                          <span className="flex items-center gap-1">
+                            💬 날짜별 회고 댓글 ({entry.comments ? entry.comments.length : 0})
+                          </span>
+                        </div>
+
+                        {/* 댓글 목록 */}
+                        <div className="space-y-1.5">
+                          {entry.comments && entry.comments.map((comment) => (
+                            <div key={comment.id} className="flex items-start justify-between text-xs bg-white p-2.5 rounded-xl border border-slate-200/60 shadow-2xs">
+                              <div className="space-y-0.5">
+                                <span className="text-[10px] text-slate-400 font-medium">{comment.date}</span>
+                                <p className="text-slate-800 leading-snug font-normal">{comment.text}</p>
+                              </div>
+                              <button
+                                onClick={() => handleDeleteComment(entry.id, comment.id)}
+                                className="text-slate-300 hover:text-rose-500 text-xs ml-2 p-0.5"
+                                title="댓글 삭제"
+                              >
+                                <X className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* 댓글 입력창 */}
+                        <div className="flex gap-1.5 pt-1">
+                          <input
+                            type="text"
+                            placeholder="지나간 날짜에 덧붙이고 싶은 생각이나 회고를 적어보세요..."
+                            value={activeCommentEntryId === entry.id ? commentTextInput : ''}
+                            onFocus={() => setActiveCommentEntryId(entry.id)}
+                            onChange={(e) => {
+                              setActiveCommentEntryId(entry.id);
+                              setCommentTextInput(e.target.value);
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') handleAddComment(entry.id);
+                            }}
+                            className="flex-1 px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:ring-1 focus:ring-indigo-500 outline-none"
+                          />
+                          <button
+                            onClick={() => handleAddComment(entry.id)}
+                            className="px-3.5 py-2 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition shrink-0"
+                          >
+                            댓글 등록
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
-
-          </div>
-        )}
+          )}
 
         {/* =========================================================================
             TAB 6: 👑 캐릭터 & 성장 (아바타 룸 & 칭호 상점)
