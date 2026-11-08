@@ -635,6 +635,24 @@ export default function AdventurerDashboard() {
 
   // Toast Trigger
   const triggerToast = (msg) => {
+    // 1. 아바타 커스텀 상태 (내 사진 업로드 Data URL)
+  const [avatarUrl, setAvatarUrl] = useState(() => {
+    return localStorage.getItem('teacher_avatar_url') || '';
+  });
+
+  // 이미지 파일 업로드 핸들러
+  const handleAvatarUpload = (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarUrl(reader.result);
+        localStorage.setItem('teacher_avatar_url', reader.result);
+        triggerToast('아바타 이미지가 변경되었습니다! ✨');
+      };
+      reader.readAsDataURL(file);
+    }
+  };
     setToastMessage(msg);
     setTimeout(() => {
       setToastMessage(null);
@@ -2898,14 +2916,24 @@ export default function AdventurerDashboard() {
             
             {/* 캐릭터 프로필 대형 카드 */}
             <div className="bg-white rounded-3xl p-6 border border-indigo-100 shadow-sm flex flex-col md:flex-row items-center gap-6">
-              <div className="relative cursor-pointer group" onClick={() => setShowAvatarModal(true)}>
-                <div className="w-28 h-28 rounded-3xl overflow-hidden border-4 border-indigo-500 shadow-xl bg-indigo-50">
-                  <img src={player.avatarImage} alt={player.name} className="w-full h-full object-cover" />
-                </div>
-                <div className="absolute inset-0 bg-slate-900/40 rounded-3xl opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs font-bold">
-                  사진 교체
-                </div>
-              </div>
+             {/* 커스텀 아바타 사진 표시 및 변경 */}
+      <div className="flex flex-col items-center gap-2">
+        <div className="relative group w-28 h-28 rounded-3xl overflow-hidden border-4 border-indigo-500 shadow-xl bg-indigo-50 flex items-center justify-center">
+          {avatarUrl ? (
+            <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+          ) : (
+            <img src={player.avatarImage || "https://images.unsplash.com/photo-1544717305-2782549b5136?w=150"} alt={player.name} className="w-full h-full object-cover" />
+          )}
+          <label className="absolute inset-0 bg-slate-900/50 text-white flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition text-xs font-bold">
+            사진 교체
+            <input type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" />
+          </label>
+        </div>
+        <label className="px-3 py-1 text-xs bg-indigo-50 text-indigo-600 border border-indigo-200 rounded-lg hover:bg-indigo-100 cursor-pointer font-medium">
+          내 사진 올리기
+          <input type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" />
+        </label>
+      </div>
 
               <div className="space-y-2 text-center md:text-left flex-1">
                 <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
