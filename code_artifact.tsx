@@ -2466,49 +2466,223 @@ export default function AdventurerDashboard() {
                 </div>
               </div>
 
-              {/* 우측 (5): 10~12월 습관들이기 & 600 더 모으기 */}
-              <div className="lg:col-span-5 space-y-3">
-                <div className="bg-white rounded-3xl p-3.5 sm:p-4 border border-indigo-100 shadow-sm space-y-2.5">
-                  <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                    <div>
-                      <h3 className="text-sm font-black text-slate-900">10~12월 습관 & 600 더 모으기</h3>
-                      <p className="text-[10px] text-slate-400">몸과 마음을 다잡는 16가지 실천 챌린지</p>
-                    </div>
-                    <span className="text-[10px] font-mono font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-200">
-                      {lifeMatrix.habitsQ4.filter(h => h.done).length}/{lifeMatrix.habitsQ4.length} 실천
-                    </span>
+             {/* 우측 (5): 10~12월 습관 & 2027 마스터 과제 (수정 가능) */}
+            <div className="lg:col-span-5 space-y-3">
+              {/* 10~12월 습관 챌린지 카드 */}
+              <div className="bg-white rounded-3xl p-3.5 sm:p-4 border border-indigo-100 shadow-sm space-y-2.5">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                  <div>
+                    <h3 className="text-sm font-black text-slate-900">{habitSectionTitle}</h3>
+                    <p className="text-[10px] text-slate-400">{habitSectionSubtitle}</p>
                   </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] font-mono font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-200">
+                      {habitList.filter(h => h.done).length}/{habitList.length} 실천
+                    </span>
+                    <button
+                      onClick={() => {
+                        setTempTextValue(habitList.map(h => h.text).join('\n'));
+                        setEditModalType('habits');
+                      }}
+                      className="text-[11px] px-2 py-0.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg font-bold transition"
+                    >
+                      ✏️ 수정
+                    </button>
+                  </div>
+                </div>
 
-                  <div className="space-y-1 max-h-[380px] overflow-y-auto pr-1">
-                    {lifeMatrix.habitsQ4.map((habit) => (
-                      <div
-                        key={habit.id}
-                        onClick={() => {
-                          setLifeMatrix(prev => {
-                            const updated = prev.habitsQ4.map(h => h.id === habit.id ? { ...h, done: !h.done } : h);
-                            return { ...prev, habitsQ4: updated };
-                          });
-                          playRetroSound('questClear', soundEnabled);
-                          grantRewards(10, 10);
-                        }}
-                        className={`flex items-center gap-2 p-1.5 rounded-xl border text-xs cursor-pointer transition ${
-                          habit.done 
-                            ? 'bg-emerald-50/70 border-emerald-200 text-emerald-900' 
-                            : 'bg-slate-50 hover:bg-slate-100 border-slate-200/80 text-slate-700'
-                        }`}
-                      >
-                        <div className={`w-3.5 h-3.5 rounded flex items-center justify-center border transition ${
-                          habit.done ? 'bg-emerald-600 border-emerald-600 text-white' : 'border-slate-300 bg-white'
-                        }`}>
-                          {habit.done && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                {/* 습관 체크 리스트 */}
+                <div className="space-y-1 max-h-[300px] overflow-y-auto pr-1">
+                  {habitList.map((habit) => (
+                    <div
+                      key={habit.id}
+                      onClick={() => toggleHabitDone(habit.id)}
+                      className={`flex items-center gap-2 p-1.5 rounded-xl border text-xs cursor-pointer transition ${
+                        habit.done
+                          ? 'bg-emerald-50/70 border-emerald-200 text-emerald-900 line-through'
+                          : 'bg-slate-50 hover:bg-slate-100 border-slate-200/80 text-slate-700'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={habit.done}
+                        readOnly
+                        className="rounded border-slate-300 text-emerald-600 pointer-events-none ml-1"
+                      />
+                      <span className="font-medium text-xs truncate flex-1">{habit.text}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 2027년 마스터 과제 카드 (다크 네이비) */}
+              <div className="bg-[#0b132b] text-white rounded-3xl p-4 shadow-sm relative">
+                <div className="flex items-center justify-between pb-2 border-b border-slate-700/60">
+                  <h3 className="font-bold text-xs text-amber-300 flex items-center gap-1.5">
+                    <span>🎖️</span> {master2027Title}
+                  </h3>
+                  <button
+                    onClick={() => {
+                      setTempTextValue(master2027List.join('\n'));
+                      setEditModalType('2027');
+                    }}
+                    className="text-[11px] px-2 py-0.5 bg-white/10 hover:bg-white/20 text-white rounded-lg transition font-medium"
+                  >
+                    ✏️ 수정
+                  </button>
+                </div>
+                <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 pt-2 text-[11px] text-slate-200">
+                  {master2027List.map((item, idx) => (
+                    <div key={idx} className="truncate hover:text-white transition">
+                      <span className="text-amber-400 font-bold mr-1">{idx + 1}.</span>
+                      {item}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 하단: 월별 액션 플랜 타임라인 */}
+          <div className="bg-white rounded-3xl p-4 sm:p-5 border border-indigo-100 shadow-sm mt-3">
+            <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 mb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-sm">🕒</span>
+                <h3 className="font-black text-slate-900 text-xs sm:text-sm">월별 액션 플랜 타임라인</h3>
+              </div>
+              <button
+                onClick={() => {
+                  setTempMonthlyData(JSON.parse(JSON.stringify(monthlyTimeline)));
+                  setEditModalType('monthly');
+                }}
+                className="text-xs px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-lg font-bold transition flex items-center gap-1"
+              >
+                ✏️ 액션플랜 수정
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-2.5">
+              {monthlyTimeline.map((plan, idx) => (
+                <div key={idx} className="bg-slate-50/80 rounded-2xl p-3 border border-slate-200/60 flex flex-col">
+                  <div className="flex items-center justify-between border-b border-slate-200/50 pb-1.5 mb-1.5">
+                    <span className="text-xs font-black text-indigo-600">{plan.month}</span>
+                    <span className="text-[10px] text-slate-400 truncate max-w-[80px]">{plan.theme}</span>
+                  </div>
+                  <ul className="space-y-1 text-[11px] text-slate-600 flex-1">
+                    {plan.items.map((it, i) => (
+                      <li key={i} className="truncate">• {it}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 수정 팝업 모달 (습관 / 2027 / 월별플랜) */}
+          {editModalType && (
+            <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+              <div className="bg-white rounded-3xl p-5 w-full max-w-lg shadow-xl border border-slate-200 space-y-3 animate-fadeIn">
+                <div className="flex items-center justify-between border-b pb-2.5">
+                  <h4 className="font-bold text-slate-800 text-sm">
+                    {editModalType === 'habits' && '습관 챌린지 항목 수정'}
+                    {editModalType === '2027' && '2027년 마스터 과제 수정'}
+                    {editModalType === 'monthly' && '월별 액션 플랜 타임라인 수정'}
+                  </h4>
+                  <button onClick={() => setEditModalType(null)} className="text-slate-400 hover:text-slate-600 text-sm font-bold">✕</button>
+                </div>
+
+                {(editModalType === 'habits' || editModalType === '2027') && (
+                  <div>
+                    <p className="text-[11px] text-slate-500 mb-2">한 줄에 하나씩 입력해 주세요 (엔터로 줄바꿈).</p>
+                    <textarea
+                      rows={9}
+                      value={tempTextValue}
+                      onChange={(e) => setTempTextValue(e.target.value)}
+                      className="w-full p-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none leading-relaxed"
+                      placeholder="항목을 입력하세요..."
+                    />
+                  </div>
+                )}
+
+                {editModalType === 'monthly' && (
+                  <div className="max-h-[55vh] overflow-y-auto space-y-3 pr-1">
+                    {tempMonthlyData.map((m, mIdx) => (
+                      <div key={mIdx} className="p-3 bg-slate-50 rounded-xl border border-slate-200/70 space-y-2">
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={m.month}
+                            onChange={(e) => {
+                              const copy = [...tempMonthlyData];
+                              copy[mIdx].month = e.target.value;
+                              setTempMonthlyData(copy);
+                            }}
+                            className="w-20 px-2 py-1 text-xs font-bold bg-white border border-slate-200 rounded-lg outline-none"
+                            placeholder="월 (예: 10월)"
+                          />
+                          <input
+                            type="text"
+                            value={m.theme}
+                            onChange={(e) => {
+                              const copy = [...tempMonthlyData];
+                              copy[mIdx].theme = e.target.value;
+                              setTempMonthlyData(copy);
+                            }}
+                            className="flex-1 px-2 py-1 text-xs bg-white border border-slate-200 rounded-lg outline-none"
+                            placeholder="테마/소제목"
+                          />
                         </div>
-                        <span className={`text-[11px] truncate ${habit.done ? 'line-through text-slate-400' : 'font-medium'}`}>
-                          {habit.text}
-                        </span>
+                        <textarea
+                          rows={3}
+                          value={m.items.join('\n')}
+                          onChange={(e) => {
+                            const copy = [...tempMonthlyData];
+                            copy[mIdx].items = e.target.value.split('\n').filter(t => t.trim() !== '');
+                            setTempMonthlyData(copy);
+                          }}
+                          className="w-full p-2 text-xs bg-white border border-slate-200 rounded-lg outline-none resize-none leading-relaxed"
+                          placeholder="세부 항목들 (줄바꿈 구분)"
+                        />
                       </div>
                     ))}
                   </div>
+                )}
+
+                <div className="flex justify-end gap-2 pt-2 border-t">
+                  <button
+                    onClick={() => setEditModalType(null)}
+                    className="px-3 py-1.5 text-xs font-semibold text-slate-500 hover:bg-slate-100 rounded-xl"
+                  >
+                    취소
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (editModalType === 'habits') {
+                        const lines = tempTextValue.split('\n').map(t => t.trim()).filter(Boolean);
+                        const newHabits = lines.map((text, idx) => ({ id: idx + 1, text, done: false }));
+                        setHabitList(newHabits);
+                        localStorage.setItem('teacher_habit_items', JSON.stringify(newHabits));
+                        if (typeof triggerToast === 'function') triggerToast('습관 챌린지가 업데이트되었습니다! ✨');
+                      } else if (editModalType === '2027') {
+                        const lines = tempTextValue.split('\n').map(t => t.trim()).filter(Boolean);
+                        setMaster2027List(lines);
+                        localStorage.setItem('teacher_2027_items', JSON.stringify(lines));
+                        if (typeof triggerToast === 'function') triggerToast('2027년 마스터 과제가 수정되었습니다! 🎯');
+                      } else if (editModalType === 'monthly') {
+                        setMonthlyTimeline(tempMonthlyData);
+                        localStorage.setItem('teacher_monthly_timeline', JSON.stringify(tempMonthlyData));
+                        if (typeof triggerToast === 'function') triggerToast('월별 액션플랜이 저장되었습니다! 📅');
+                      }
+                      setEditModalType(null);
+                    }}
+                    className="px-4 py-1.5 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow transition"
+                  >
+                    저장하기
+                  </button>
                 </div>
+              </div>
+            </div>
+          )}
 
                 {/* 2027 핵심 플랜 요약 */}
                 <div className="bg-slate-900 rounded-3xl p-4 text-white shadow-sm space-y-2">
