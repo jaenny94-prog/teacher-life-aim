@@ -1282,13 +1282,22 @@ export default function AdventurerDashboard() {
                   </span>
                 </h1>
               </div>
-              <div className="flex items-center gap-2 text-xs text-slate-500">
-                <span className="font-bold text-indigo-600">{player.name}</span>
-                <span>•</span>
-                <span className="truncate max-w-[140px] sm:max-w-[200px] text-slate-600 font-medium">
-                  {player.equippedTitle}
-                </span>
-              </div>
+             <div className="flex items-center gap-1.5 flex-wrap text-xs text-slate-500">
+                  <span className="font-bold text-indigo-600 cursor-pointer hover:underline" onClick={handleEditProfile}>
+                    {player.name || '모험가 김선생'}
+                  </span>
+                  <span>•</span>
+                  <span className="text-slate-600 font-medium">
+                    {player.salaryStep || player.level}호봉 현명한 가계부 마스터
+                  </span>
+                  <button
+                    onClick={handleEditProfile}
+                    title="이름 및 호봉 수정"
+                    className="px-1.5 py-0.5 text-[10px] font-bold bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-500 rounded border border-slate-200 transition ml-1"
+                  >
+                    ✏️ 수정
+                  </button>
+                </div>
             </div>
           </div>
 
