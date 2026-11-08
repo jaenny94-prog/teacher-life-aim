@@ -1,17 +1,20 @@
 {
+  "id": "/",
+  "name": "티처라이프 - 교직 & 머니 대시보드",
   "short_name": "티처라이프",
-  "name": "Teacher Money & Life Dashboard",
+  "description": "교직 및 자산 관리를 위한 올인원 웹 대시보드",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#4f46e5",
   "icons": [
     {
-      "src": "https://api.iconify.design/lucide:sparkles.svg?color=%2338bdf8",
-      "type": "image/svg+xml",
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='128' fill='%234f46e5'/%3E%3Cpath d='M256 120 L380 200 L256 280 L132 200 Z' fill='%23ffffff'/%3E%3Cpath d='M160 230 L160 320 C160 360 352 360 352 320 L352 230' fill='none' stroke='%23ffffff' stroke-width='28' stroke-linecap='round'/%3E%3Cpath d='M380 200 L380 300' stroke='%23ffffff' stroke-width='20' stroke-linecap='round'/%3E%3C/svg%3E",
       "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
     }
-  ],
-  "start_url": "/",
-  "background_color": "#f8fafc",
-  "theme_color": "#38bdf8",
-  "display": "standalone",
-  "orientation": "portrait"
+  ]
 }
