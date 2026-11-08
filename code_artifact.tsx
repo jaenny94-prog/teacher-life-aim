@@ -746,7 +746,34 @@ export default function AdventurerDashboard() {
       reader.readAsDataURL(file);
     }
   };
+// 이름 및 호봉 직접 수정 함수
+  const handleEditProfile = () => {
+    const currentName = player?.name || '모험가 김선생';
+    const currentStep = player?.salaryStep || player?.level || 18;
 
+    const newName = window.prompt('변경할 이름을 입력하세요:', currentName);
+    if (newName === null) return; // 취소 시 중단
+
+    const newStep = window.prompt('현재 호봉(숫자만)을 입력하세요:', currentStep);
+    if (newStep === null) return; // 취소 시 중단
+
+    const parsedStep = parseInt(newStep, 10) || currentStep;
+
+    setPlayer(prev => {
+      const updated = {
+        ...prev,
+        name: newName.trim() || prev.name,
+        level: parsedStep,
+        salaryStep: parsedStep
+      };
+      localStorage.setItem('teacher_player_info', JSON.stringify(updated));
+      return updated;
+    });
+
+    if (typeof triggerToast === 'function') {
+      triggerToast(`프로필이 수정되었습니다! (${newName.trim()}, ${parsedStep}호봉) ✨`);
+    }
+  };
   // 2. 일기 데이터 상태 및 제어 함수
   const [diaryEntries, setDiaryEntries] = useState(() => {
     const saved = localStorage.getItem('teacher_diary_entries');
