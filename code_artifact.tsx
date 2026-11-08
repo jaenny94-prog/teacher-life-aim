@@ -633,9 +633,15 @@ export default function AdventurerDashboard() {
     localStorage.setItem('teacher_money_vacation_plans', JSON.stringify(vacationPlans));
   }, [vacationPlans]);
 
-  // Toast Trigger
+ // Toast Trigger
   const triggerToast = (msg) => {
-    // 1. 아바타 커스텀 상태 (내 사진 업로드 Data URL)
+    setToastMessage(msg);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 3000);
+  };
+
+  // 1. 아바타 커스텀 상태 (내 사진 업로드 Data URL)
   const [avatarUrl, setAvatarUrl] = useState(() => {
     return localStorage.getItem('teacher_avatar_url') || '';
   });
@@ -653,10 +659,125 @@ export default function AdventurerDashboard() {
       reader.readAsDataURL(file);
     }
   };
-    setToastMessage(msg);
-    setTimeout(() => {
-      setToastMessage(null);
-    }, 3000);
+
+  // 2. 일기 데이터 상태 및 제어 함수
+  const [diaryEntries, setDiaryEntries] = useState(() => {
+    const saved = localStorage.getItem('teacher_diary_entries');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) { console.error(e); }
+    }
+    return [
+      {
+        id: 'd-1',
+        date: new Date().toISOString().split('T')[0],
+        title: '오늘의 교실 기록',
+        content: '아이들과 함께 규칙을 정하고 차분하게 하루를 보냈다.',
+        mood: 'smile',
+        comments: [
+          { id: 'c-1', date: new Date().toISOString().replace('T', ' ').slice(0, 16), text: '다음 주에는 모둠 활동 규칙도 보완해보기.' }
+        ]
+      }
+    ];
+  });
+
+  const [editingDiary, setEditingDiary] = useState(null);
+  const [diaryDateInput, setDiaryDateInput] = useState(new Date().toISOString().split('T')[0]);
+  const [diaryTitleInput, setDiaryTitleInput] = useState('');
+  const [diaryContentInput, setDiaryContentInput] = useState('');
+  const [diaryMoodInput, setDiaryMoodInput] = useState('smile');
+
+  const [activeCommentEntryId, setActiveCommentEntryId] = useState(null);
+  const [commentTextInput, setCommentTextInput] = useState('');
+
+  const saveDiaryList = (newList) => {
+    setDiaryEntries(newList);
+    localStorage.setItem('teacher_diary_entries', JSON.stringify(newList));
+  };
+
+  const handleSaveDiaryEntry = () => {
+    if (!diaryTitleInput.trim() || !diaryContentInput.trim()) {
+      alert('제목과 내용을 모두 입력해 주세요.');
+      return;
+    }
+
+    if (editingDiary && editingDiary.id) {
+      const updated = diaryEntries.map(entry => 
+        entry.id === editingDiary.id 
+          ? { ...entry, date: diaryDateInput, title: diaryTitleInput, content: diaryContentInput, mood: diaryMoodInput }
+          : entry
+      );
+      saveDiaryList(updated);
+      triggerToast('일기가 성공적으로 수정되었습니다! 📝');
+    } else {
+      const newEntry = {
+        id: 'd-' + Date.now(),
+        date: diaryDateInput,
+        title: diaryTitleInput,
+        content: diaryContentInput,
+        mood: diaryMoodInput,
+        comments: []
+      };
+      saveDiaryList([newEntry, ...diaryEntries]);
+      triggerToast('새 일기가 저장되었습니다! ✨');
+    }
+
+    setEditingDiary(null);
+    setDiaryTitleInput('');
+    setDiaryContentInput('');
+    setDiaryDateInput(new Date().toISOString().split('T')[0]);
+  };
+
+  const handleDeleteDiaryEntry = (id) => {
+    if (window.confirm('이 일기를 정말 삭제하시겠습니까?')) {
+      const filtered = diaryEntries.filter(entry => entry.id !== id);
+      saveDiaryList(filtered);
+      triggerToast('일기가 삭제되었습니다. 🗑️');
+    }
+  };
+
+  const handleOpenEditModal = (entry) => {
+    setEditingDiary(entry);
+    setDiaryDateInput(entry.date);
+    setDiaryTitleInput(entry.title);
+    setDiaryContentInput(entry.content);
+    setDiaryMoodInput(entry.mood || 'smile');
+  };
+
+  const handleAddComment = (entryId) => {
+    if (!commentTextInput.trim()) return;
+    const nowStr = new Date().toLocaleString('ko-KR', { 
+      year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' 
+    });
+    
+    const updated = diaryEntries.map(entry => {
+      if (entry.id === entryId) {
+        const newComments = entry.comments ? [...entry.comments] : [];
+        newComments.push({
+          id: 'c-' + Date.now(),
+          date: nowStr,
+          text: commentTextInput.trim()
+        });
+        return { ...entry, comments: newComments };
+      }
+      return entry;
+    });
+
+    saveDiaryList(updated);
+    setCommentTextInput('');
+    triggerToast('회고 댓글이 추가되었습니다! 💬');
+  };
+
+  const handleDeleteComment = (entryId, commentId) => {
+    const updated = diaryEntries.map(entry => {
+      if (entry.id === entryId) {
+        return {
+          ...entry,
+          comments: (entry.comments || []).filter(c => c.id !== commentId)
+        };
+      }
+      return entry;
+    });
+    saveDiaryList(updated);
   };
 
   // EXP & Gold Reward System
