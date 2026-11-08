@@ -2466,43 +2466,7 @@ export default function AdventurerDashboard() {
                           </div>
 
                           {/* 목표 클릭 시 확장되는 세부 기간별 마일스톤 (한달, 분기, 반기, 1년) */}
-                          {isSelected && (
-                            <div className="mt-2.5 pt-2 border-t border-indigo-100 space-y-1.5 pl-7 pr-1">
-                              <div className="text-[10px] font-bold text-indigo-600 flex justify-between">
-                                <span>기간별 실천 마일스톤</span>
-                                <span>체크 시 도달률 자동 반영</span>
-                              </div>
-                              {(goal.milestones || []).map((m, mIdx) => (
-                                <div
-                                  key={mIdx}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleToggleMilestone(goal.id, mIdx);
-                                  }}
-                                  className="flex items-center gap-2 text-[11px] text-slate-700 hover:text-indigo-700 cursor-pointer py-0.5"
-                                >
-                                  <div className={`w-3.5 h-3.5 rounded flex items-center justify-center border transition ${
-                                    m.done ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-slate-300 bg-white'
-                                  }`}>
-                                    {m.done && <Check className="w-2.5 h-2.5 stroke-[3]" />}
-                                  </div>
-                                  <span className="font-mono text-[9px] font-bold text-indigo-800 bg-indigo-50 px-1 py-0.2 rounded border border-indigo-100">
-                                    {m.period}
-                                  </span>
-                                  <span className={`truncate ${m.done ? 'line-through text-slate-400' : ''}`}>
-                                    {m.title}
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                </div>
-              </div>
-
-             {/* 우측 (5): 10~12월 습관 & 2027 마스터 과제 (수정 가능) */}
+                        {/* 우측 (5): 10~12월 습관 & 2027 마스터 과제 (수정 가능) */}
             <div className="lg:col-span-5 space-y-3">
               {/* 10~12월 습관 챌린지 카드 */}
               <div className="bg-white rounded-3xl p-3.5 sm:p-4 border border-indigo-100 shadow-sm space-y-2.5">
@@ -2614,7 +2578,7 @@ export default function AdventurerDashboard() {
             </div>
           </div>
 
-          {/* 수정 팝업 모달 (습관 / 2027 / 월별플랜) */}
+          {/* 수정 팝업 모달 */}
           {editModalType && (
             <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
               <div className="bg-white rounded-3xl p-5 w-full max-w-lg shadow-xl border border-slate-200 space-y-3 animate-fadeIn">
@@ -2719,48 +2683,6 @@ export default function AdventurerDashboard() {
               </div>
             </div>
           )}
-
-                {/* 2027 핵심 플랜 요약 */}
-                <div className="bg-slate-900 rounded-3xl p-4 text-white shadow-sm space-y-2">
-                  <div className="text-xs font-black text-amber-400 flex items-center gap-1.5">
-                    <Award className="w-4 h-4" />
-                    <span>2027년 14대 핵심 마스터 과제</span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-1 text-[11px] text-slate-300 font-medium">
-                    {lifeMatrix.year2027MasterPlan.map((item, idx) => (
-                      <div key={idx} className="truncate hover:text-white transition">
-                        {item}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-            </div>
-
-            {/* 하단: 월별 타임라인 트랙 & 마음의 나침반 */}
-            <div className="bg-white rounded-3xl p-4 border border-indigo-100 shadow-sm space-y-3">
-              <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
-                <Clock className="w-4 h-4 text-indigo-600" />
-                <span>월별 액션 플랜 타임라인 (10월 ~ 4월)</span>
-              </h3>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
-                {lifeMatrix.timelineMonths.map((m, idx) => (
-                  <div key={idx} className="bg-slate-50 border border-slate-200 rounded-2xl p-3 space-y-1.5">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-black text-indigo-700 font-mono">{m.month}</span>
-                      <span className="text-[10px] font-bold text-slate-500 truncate max-w-[100px]">{m.title}</span>
-                    </div>
-                    <ul className="text-[10px] text-slate-600 space-y-0.5">
-                      {m.items.map((it, iIdx) => (
-                        <li key={iIdx} className="truncate">• {it}</li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            </div>
 
           </div>
         )}
