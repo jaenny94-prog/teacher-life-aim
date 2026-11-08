@@ -640,7 +640,94 @@ export default function AdventurerDashboard() {
       setToastMessage(null);
     }, 3000);
   };
+// ==========================================
+  // [수정 가능 데이터] 습관 챌린지, 2027 목표, 월별 액션플랜
+  // ==========================================
+  
+  // 1. 습관 챌린지 상태
+  const [habitSectionTitle, setHabitSectionTitle] = useState(() => {
+    return localStorage.getItem('teacher_habit_title') || '10~12월 습관 & 600 더 모으기';
+  });
+  const [habitSectionSubtitle, setHabitSectionSubtitle] = useState(() => {
+    return localStorage.getItem('teacher_habit_sub') || '몸과 마음을 다잡는 16가지 실천 챌린지';
+  });
+  const [habitList, setHabitList] = useState(() => {
+    const saved = localStorage.getItem('teacher_habit_items');
+    if (saved) { try { return JSON.parse(saved); } catch (e) {} }
+    return [
+      { id: 1, text: "자전적 소설 + 웹소설 쓰기", done: false },
+      { id: 2, text: "그래머인유즈 다 끝내기", done: false },
+      { id: 3, text: "그래머인유즈 오답노트 달달 외우기", done: false },
+      { id: 4, text: "필라테스 주 2~3회 출석", done: false },
+      { id: 5, text: "홈트 스트레칭 열심히 하기", done: false },
+      { id: 6, text: "경제지 매주 읽고 블로그 정리", done: false },
+      { id: 7, text: "봉사활동 시작하기 (용기 내보기)", done: false },
+      { id: 8, text: "일본여행 준비 - 히라가나, 회화 익히기", done: false },
+      { id: 9, text: "물건 안 사고 최대한 비우고 줄이기", done: false },
+      { id: 10, text: "독하게 편의점 커피, 음료 끊기", done: false },
+      { id: 11, text: "과자 끊고 아메리카노만 마시기", done: false }
+    ];
+  });
 
+  // 2. 2027 마스터 과제 상태
+  const [master2027Title, setMaster2027Title] = useState(() => {
+    return localStorage.getItem('teacher_2027_title') || '2027년 14대 핵심 마스터 과제';
+  });
+  const [master2027List, setMaster2027List] = useState(() => {
+    const saved = localStorage.getItem('teacher_2027_items');
+    if (saved) { try { return JSON.parse(saved); } catch (e) {} }
+    return [
+      "연구대회", "영어토플 114", "대학원준비", "풀브라이트 준비",
+      "금융공모전 준비", "부장 일 잘하기", "학급경영 초석", "다이어트 45kg",
+      "프리다이빙", "이집트 한달살기 준비", "돈 열심히 모으기 (2천만)",
+      "블로그 키우기, 글쓰기", "봉사활동하기", "외부강의도 도전"
+    ];
+  });
+
+  // 3. 월별 액션 플랜 타임라인 상태
+  const [monthlyTimeline, setMonthlyTimeline] = useState(() => {
+    const saved = localStorage.getItem('teacher_monthly_timeline');
+    if (saved) { try { return JSON.parse(saved); } catch (e) {} }
+    return [
+      {
+        month: "10월",
+        theme: "습관 초석 & 건강 ...",
+        items: ["필라테스 주2회", "수영 주말이라도 가기", "매원 계단오르기", "영단어 외우기", "9kg 감량 도전"]
+      },
+      {
+        month: "1월",
+        theme: "삿포로 여행 & 어학...",
+        items: ["일본어 집중공부", "프리다이빙 등록", "매원 수영, 필라테스", "다이어트 빡세게", "일본 여행 잘 다녀오기"]
+      },
+      {
+        month: "2월",
+        theme: "어학 & 창작 폭발",
+        items: ["프리다이빙", "영어공부 빡세게", "글쓰기, 작사작곡", "토플 문제집 시작", "블로그 더 열심히"]
+      },
+      {
+        month: "3월",
+        theme: "연구대회 & 새학기 ...",
+        items: ["연구대회 준비 및 초석", "학급경영 세팅", "기록 꼼꼼히 시작", "금융공모전 준비", "교과서 연구"]
+      },
+      {
+        month: "4월",
+        theme: "풀브라이트 제출 & ...",
+        items: ["풀브라이트 제출이라도 해보자", "부장 일 잘하기", "이집트 한달살기 준비", "블로그 키우기"]
+      }
+    ];
+  });
+
+  // 편집 모달용 임시 상태
+  const [editModalType, setEditModalType] = useState(null);
+  const [tempTextValue, setTempTextValue] = useState('');
+  const [tempMonthlyData, setTempMonthlyData] = useState([]);
+
+  // 습관 체크 토글 함수
+  const toggleHabitDone = (id) => {
+    const updated = habitList.map(item => item.id === id ? { ...item, done: !item.done } : item);
+    setHabitList(updated);
+    localStorage.setItem('teacher_habit_items', JSON.stringify(updated));
+  };
   // 1. 아바타 커스텀 상태 (내 사진 업로드 Data URL)
   const [avatarUrl, setAvatarUrl] = useState(() => {
     return localStorage.getItem('teacher_avatar_url') || '';
